@@ -21,7 +21,7 @@
 
   tasks:
     - name: Credential client helper version
-      shell: command aws --version
+      shell: command aws --version  # noqa 301 305
       environment:
         PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin/"
       register: check_in_path
