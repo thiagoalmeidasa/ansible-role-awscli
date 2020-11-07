@@ -1,0 +1,22 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Include default vars from role
+      include_vars:
+        dir: vars/
+        extensions:
+          - 'yaml'
+          - 'yml'
+  tasks:
+    - name: Create users
+      user:
+        name: "{{ item.username }}"
+      loop: "{{ awscli_users }}"
+      loop_control:
+        label: "{{ item.username }}"
+
+    - include_role:
+        name: thiagoalmeidasa.awscli

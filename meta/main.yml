@@ -1,23 +1,30 @@
 ---
-dependencies: []
+allow_duplicates: true
 
 galaxy_info:
-  author: tommarshall
+  role_name: awscli
+  author: Thiago Almeida
   description: Installs and configures AWS CLI via pip.
   company:
   license: "license (BSD, MIT)"
-  min_ansible_version: 1.4
+  min_ansible_version: 2.6
   platforms:
-  - name: EL
-    versions:
-    - 6
-    - 7
-  - name: Ubuntu
-    versions:
-    - all
-  - name: Debian
-    versions:
-    - all
+    - name: EL
+      versions:
+        - 7
+        - 8
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - stretch
+        - buster
+    - name: Ubuntu
+      versions:
+        - bionic
+        - focal
+        - groovy
   galaxy_tags:
-      - awscli
-      - aws
+    - awscli
+    - aws

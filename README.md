@@ -1,7 +1,7 @@
 Ansible Role: AWS CLI
 =========
 
-[![Build Status](https://travis-ci.org/tommarshall/ansible-role-awscli.svg?branch=master)](https://travis-ci.org/tommarshall/ansible-role-awscli)
+[![Build Status](https://travis-ci.org/thiagoalmeidasa/ansible-role-awscli.svg?branch=master)](https://travis-ci.org/thiagoalmeidasa/ansible-role-awscli)
 
 Installs [AWS Command Line Interface](https://aws.amazon.com/cli/) on RHEL/CentOS or Debian/Ubuntu servers via `pip`. Configures AWS CLI user credentials, including support for profiles.
 
@@ -18,7 +18,7 @@ Role Variables
 awscli_pip_package: python-pip
 
 # Version of 'awscli' to install
-awscli_version: 1.11.73
+awscli_version: 1.18.162
 ```
 
 ```yml
@@ -57,7 +57,7 @@ Example Playbook
 
     - hosts: all
       roles:
-         - { role: tommarshall.awscli }
+         - { role: thiagoalmeidasa.awscli }
 
 License
 -------

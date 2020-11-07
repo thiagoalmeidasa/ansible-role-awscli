@@ -1,14 +1,17 @@
 ---
 # Setup/install tasks.
-
-- include: setup-RedHat.yml
+- name: Install python3-pip via package manager
+  import_tasks: setup-RedHat.yml
   when: ansible_os_family == 'RedHat'
 
-- include: setup-Debian.yml
+- name: Install python3-pip via package manager
+  import_tasks: setup-Debian.yml
   when: ansible_os_family == 'Debian'
 
 - name: Install awscli via pip.
-  pip: "name=awscli version={{ awscli_version }}"
+  pip:
+    name: awscli
+    version: "{{ awscli_version }}"
   become: yes
 
 - name: Ensure the users' .aws directory exists.
@@ -17,9 +20,12 @@
     state: directory
     owner: "{{ item.username }}"
     group: "{{ item.group | default(item.username) }}"
+    mode: 0755
   become: yes
   become_user: "{{ item.username }}"
-  with_items: "{{ awscli_users }}"
+  loop: "{{ awscli_users }}"
+  loop_control:
+    label: "{{ item.username }}"
 
 - name: Create the users' .aws/config file.
   template:
@@ -30,7 +36,9 @@
     mode: 0600
   become: yes
   become_user: "{{ item.username }}"
-  with_items: "{{ awscli_users }}"
+  loop: "{{ awscli_users }}"
+  loop_control:
+    label: "{{ item.username }}"
 
 - name: Create the users' .aws/credentials file.
   template:
@@ -41,4 +49,6 @@
     mode: 0600
   become: yes
   become_user: "{{ item.username }}"
-  with_items: "{{ awscli_users }}"
+  loop: "{{ awscli_users }}"
+  loop_control:
+    label: "{{ item.username }}"

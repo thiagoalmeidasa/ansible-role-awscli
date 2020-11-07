@@ -1,0 +1,43 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  become: true
+
+  pre_tasks:
+    - name: Include default vars from role
+      include_vars:
+        dir: ../../defaults
+        extensions:
+          - 'yaml'
+          - 'yml'
+
+    - name: Include test vars
+      include_vars:
+        dir: vars/
+        extensions:
+          - 'yaml'
+          - 'yml'
+
+  tasks:
+    - name: Credential client helper version
+      shell: command aws --version
+      environment:
+        PATH: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin/"
+      register: check_in_path
+      become: yes
+      become_user: "{{ item.username }}"
+      loop: "{{ awscli_users }}"
+      loop_control:
+        label: "{{ item.username }}"
+
+    - name: Assert awscli version
+      assert:
+        that:
+          - item is succeeded
+          - "{{ awscli_version in item.stdout or awscli_version in item.stderr }}"
+        success_msg: awscli version is correct
+        fail_msg: Wrong awscli version
+      loop: "{{ check_in_path.results }}"
+      loop_control:
+        label: "{{ item.item }}"

@@ -1,46 +1,40 @@
 ---
 language: python
-python: "2.7"
+python:
+  - "3.8"
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.cache/pipenv
+services: docker
 
 env:
-  - SITE=test.yml
-
-before_install:
-  - sudo apt-get update -qq
+  global:
+    - ROLE_NAME: awscli
+  matrix:
+    - MOLECULE_DISTRO: centos:7
+    - MOLECULE_DISTRO: centos:8
+    - MOLECULE_DISTRO: debian:9
+    - MOLECULE_DISTRO: debian:10
+    - MOLECULE_DISTRO: ubuntu:16.04
+    - MOLECULE_DISTRO: ubuntu:18.04
+    - MOLECULE_DISTRO: ubuntu:19.10
+    - MOLECULE_DISTRO: ubuntu:20.04
+    - MOLECULE_DISTRO: ubuntu:20.10
 
 install:
-  # Install Ansible.
-  - pip install ansible
+  # Install test dependencies.
+  - pipenv install
 
-  # Add ansible.cfg to pick up roles path.
-  - "{ echo '[defaults]'; echo 'roles_path = ../'; } >> ansible.cfg"
+before_script:
+  # Use actual Ansible Galaxy role name for the project directory.
+  - cd ../
+  - mv ansible-role-$ROLE_NAME thiagoalmeidasa.$ROLE_NAME
+  - cd thiagoalmeidasa.$ROLE_NAME
 
 script:
-  # Check the role/playbook's syntax.
-  - "ansible-playbook -i tests/inventory tests/$SITE --syntax-check"
-
-  # Run the role/playbook with ansible-playbook.
-  - "ansible-playbook -vv -i tests/inventory tests/$SITE --connection=local --sudo"
-
-  # Run the role/playbook again, checking to make sure it's idempotent.
-  - >
-    ansible-playbook -i tests/inventory tests/$SITE --connection=local --sudo
-    | grep -q 'changed=0.*failed=0'
-    && (echo 'Idempotence test: pass' && exit 0)
-    || (echo 'Idempotence test: fail' && exit 1)
-
-  # Check to make sure AWS CLI is installed.
-  - >
-    which aws
-    | grep -q '/usr/local/bin/aws'
-    && (echo 'AWS CLI installed' && exit 0)
-    || (echo 'AWS CLI not installed' && exit 1)
-
-  # Check to make sure AWS CLI is functional.
-  - >
-    aws --version
-    && (echo 'AWS CLI functional' && exit 0)
-    || (echo 'AWS CLI not functional' && exit 1)
+  # Run tests.
+  - pipenv run molecule test
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
